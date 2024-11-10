@@ -7,7 +7,11 @@ import os
 app = Flask(__name__)
 
 # تحميل النموذج
-model = tf.keras.models.load_model("end3.keras")
+if os.path.exists("end3.keras"):
+    model = tf.keras.models.load_model("end3.keras")
+else:
+    print("Model file not found.")
+
 
 # كود المعالجة السابقه مفروض يتعدل على حسب أخر نموذج (معلوووومه مهههههمه) لازم تتعدل
 def preprocess_image(image):

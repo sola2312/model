@@ -4,7 +4,7 @@ from PIL import Image
 import numpy as np
 import os
 
-app = Flask(name)
+app = Flask(__name__)
 
 # تحميل النموذج
 model = tf.keras.models.load_model("end3.keras")

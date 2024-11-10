@@ -7,13 +7,13 @@ import os
 app = Flask(name)
 
 # تحميل النموذج
-model = tf.keras.models.load_model("plant_model.keras")
+model = tf.keras.models.load_model("end3.keras")
 
 # كود المعالجة السابقه مفروض يتعدل على حسب أخر نموذج (معلوووومه مهههههمه) لازم تتعدل
 def preprocess_image(image):
-    image = image.resize((224, 224))  # تغيير حجم الصورة
+    image = image.resize((256, 256))  # تغيير حجم الصورة
     image_array = np.array(image) / 255.0  # تطبيع القيم
-    return image_array.reshape(1, 224, 224, 3)  # إعادة تشكيل البيانات
+    return image_array.reshape(1, 256, 256, 3)  # إعادة تشكيل البيانات
 
 @app.route('/predict', methods=['POST'])
 def predict():

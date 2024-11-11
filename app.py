@@ -7,13 +7,14 @@ import os
 app = Flask(__name__)
 
 # تحميل النموذج
-if os.path.exists("end3.keras"):
-    model = tf.keras.models.load_model("end3.keras")
+model_path = "end3.keras"
+if os.path.exists(model_path):
+    model = tf.keras.models.load_model(model_path)
 else:
     print("Model file not found.")
 
 
-# كود المعالجة السابقه مفروض يتعدل على حسب أخر نموذج (معلوووومه مهههههمه) لازم تتعدل
+# معالجة الصورة بما يناسب النموذج الحالي
 def preprocess_image(image):
     image = image.resize((256, 256))  # تغيير حجم الصورة
     image_array = np.array(image) / 255.0  # تطبيع القيم
@@ -21,10 +22,6 @@ def preprocess_image(image):
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    print("Request method mj:", request.method)
-    print("Request files:", request.files)
-
-
     if 'file' not in request.files:
         return jsonify({"error": "لم يتم إرسال ملف"}), 400
     
@@ -33,24 +30,21 @@ def predict():
     if not file.filename.endswith(('.png', '.jpg', '.jpeg')):
         return jsonify({"error": "نوع الملف غير مدعوم. يرجى تحميل صورة."}), 400
 
-    if not os.path.exists("plant_model.keras"):
-        return jsonify({"error": "النموذج غير موجود!"}), 500
-
-    image = Image.open(file.stream)  # فتح الصورة
+    image = Image.open(file.stream)
     preprocessed_image = preprocess_image(image)
     predictions = model.predict(preprocessed_image)
     
     # استخراج النتيجة
-    class_index = np.argmax(predictions, axis=1)[0]
-    confidence = np.max(predictions)
+    class_index = int(np.argmax(predictions, axis=1)[0])
+    confidence = float(np.max(predictions))
 
     # إرسال النتيجة
     response = {
-        "class_index": int(class_index),
-        "confidence": float(confidence)
+        "class_index": class_index,
+        "confidence": confidence
     }
     
     return jsonify(response)
 
-if name == 'main':
-    app.run(host='0.0.0.0', port=5000)
+# if __name__ == '__main__':
+#     app.run(host='0.0.0.0', port=5000)
